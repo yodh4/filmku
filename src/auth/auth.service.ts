@@ -52,12 +52,4 @@ export class AuthService {
             },
         };
     }
-
-    async validateUser(userId: number) {
-        const user = await this.usersService.findByEmail(userId.toString());
-        if (!user) {
-            throw new UnauthorizedException('User not found');
-        }
-        return user;
-    }
 }
