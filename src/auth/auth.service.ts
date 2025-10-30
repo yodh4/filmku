@@ -16,6 +16,7 @@ export class AuthService {
         return {
             message: 'User registered successfully. Please login to continue.',
             user: {
+                id: user.id,
                 username: user.username,
                 email: user.email,
             },
@@ -39,6 +40,7 @@ export class AuthService {
         }
 
         const payload = { 
+            sub: user.id,
             username: user.username,
             email: user.email 
         };
@@ -47,6 +49,7 @@ export class AuthService {
         return {
             access_token,
             user: {
+                id: user.id,
                 username: user.username,
                 email: user.email,
             },

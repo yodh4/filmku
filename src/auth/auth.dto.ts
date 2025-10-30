@@ -30,6 +30,7 @@ export class LoginDto {
 export class LoginResponseDto {
     access_token: string;
     user: {
+        id: number;
         username: string;
         email: string;
     };
@@ -38,6 +39,7 @@ export class LoginResponseDto {
 export class RegisterResponseDto {
     message: string;
     user: {
+        id: number;
         username: string;
         email: string;
     };
