@@ -26,6 +26,7 @@ export class ReviewResponseDto {
   id: number;
   movie_id: number;
   user_id: number;
+  username?: string;
   rating: number;
   comment: string;
   created_at: Date;

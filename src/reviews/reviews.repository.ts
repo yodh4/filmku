@@ -8,6 +8,7 @@ export interface Review {
   rating: number;
   comment: string;
   created_at: Date;
+  username?: string; // Optional - only present when joined with users table
 }
 
 @Injectable()
@@ -22,9 +23,11 @@ export class ReviewsRepository {
 
   async findByMovieId(movieId: number, limit: number = 50, offset: number = 0): Promise<Review[]> {
     const query = `
-      SELECT * FROM reviews 
-      WHERE movie_id = $1 
-      ORDER BY created_at DESC 
+      SELECT r.*, u.username 
+      FROM reviews r
+      JOIN users u ON r.user_id = u.id
+      WHERE r.movie_id = $1 
+      ORDER BY r.created_at DESC 
       LIMIT $2 OFFSET $3
     `;
     const result = await this.db.query(query, [movieId, limit, offset]);
@@ -50,7 +53,14 @@ export class ReviewsRepository {
       RETURNING *
     `;
     const result = await this.db.query(query, [movieId, userId, rating, comment]);
-    return result.rows[0];
+    const review = result.rows[0];
+    
+    // Fetch username separately
+    const userQuery = 'SELECT username FROM users WHERE id = $1';
+    const userResult = await this.db.query(userQuery, [userId]);
+    review.username = userResult.rows[0]?.username;
+    
+    return review;
   }
 
   async update(id: number, rating?: number, comment?: string): Promise<Review | null> {
@@ -81,7 +91,15 @@ export class ReviewsRepository {
     `;
 
     const result = await this.db.query(query, values);
-    return result.rows[0] || null;
+    const review = result.rows[0] || null;
+    
+    if (review) {
+      const userQuery = 'SELECT username FROM users WHERE id = $1';
+      const userResult = await this.db.query(userQuery, [review.user_id]);
+      review.username = userResult.rows[0]?.username;
+    }
+    
+    return review;
   }
 
   async delete(id: number): Promise<boolean> {

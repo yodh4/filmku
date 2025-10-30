@@ -11,10 +11,8 @@ export class ReviewsService {
   ) {}
 
   async create(movieId: number, userId: number, createReviewDto: CreateReviewDto): Promise<Review> {
-    // Check if movie exists
     await this.moviesService.findById(movieId);
 
-    // Check if user already reviewed this movie
     const existingReview = await this.reviewsRepository.findByUserAndMovie(userId, movieId);
     if (existingReview) {
       throw new ConflictException('You have already reviewed this movie');
@@ -29,7 +27,6 @@ export class ReviewsService {
   }
 
   async findByMovieId(movieId: number): Promise<{ reviews: Review[]; total: number }> {
-    // Check if movie exists
     await this.moviesService.findById(movieId);
 
     const reviews = await this.reviewsRepository.findByMovieId(movieId);
@@ -51,7 +48,6 @@ export class ReviewsService {
   async update(id: number, userId: number, updateReviewDto: UpdateReviewDto): Promise<Review> {
     const review = await this.findById(id);
 
-    // Check if the user owns this review
     if (review.user_id !== userId) {
       throw new ForbiddenException('You can only update your own reviews');
     }
@@ -72,7 +68,6 @@ export class ReviewsService {
   async delete(id: number, userId: number): Promise<void> {
     const review = await this.findById(id);
 
-    // Check if the user owns this review
     if (review.user_id !== userId) {
       throw new ForbiddenException('You can only delete your own reviews');
     }
