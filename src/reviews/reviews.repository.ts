@@ -55,11 +55,6 @@ export class ReviewsRepository {
     const result = await this.db.query(query, [movieId, userId, rating, comment]);
     const review = result.rows[0];
     
-    // Fetch username separately
-    const userQuery = 'SELECT username FROM users WHERE id = $1';
-    const userResult = await this.db.query(userQuery, [userId]);
-    review.username = userResult.rows[0]?.username;
-    
     return review;
   }
 
@@ -92,12 +87,6 @@ export class ReviewsRepository {
 
     const result = await this.db.query(query, values);
     const review = result.rows[0] || null;
-    
-    if (review) {
-      const userQuery = 'SELECT username FROM users WHERE id = $1';
-      const userResult = await this.db.query(userQuery, [review.user_id]);
-      review.username = userResult.rows[0]?.username;
-    }
     
     return review;
   }

@@ -27,8 +27,8 @@ export class ReviewsController {
     @Body() createReviewDto: CreateReviewDto,
     @Request() req,
   ): Promise<ReviewResponseDto> {
-    const userId = req.user.userId;
-    return this.reviewsService.create(movieId, userId, createReviewDto);
+    const { userId, username } = req.user;
+    return this.reviewsService.create(movieId, userId, username, createReviewDto);
   }
 
   @Get('movies/:id/reviews')
@@ -50,8 +50,8 @@ export class ReviewsController {
     @Body() updateReviewDto: UpdateReviewDto,
     @Request() req,
   ): Promise<ReviewResponseDto> {
-    const userId = req.user.userId;
-    return this.reviewsService.update(id, userId, updateReviewDto);
+    const { userId, username } = req.user;
+    return this.reviewsService.update(id, userId, username, updateReviewDto);
   }
 
   @Delete('reviews/:id')

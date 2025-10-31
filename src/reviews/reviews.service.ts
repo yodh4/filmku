@@ -10,7 +10,7 @@ export class ReviewsService {
     private readonly moviesService: MoviesService,
   ) {}
 
-  async create(movieId: number, userId: number, createReviewDto: CreateReviewDto): Promise<Review> {
+  async create(movieId: number, userId: number, username: string, createReviewDto: CreateReviewDto): Promise<Review> {
     await this.moviesService.findById(movieId);
 
     const existingReview = await this.reviewsRepository.findByUserAndMovie(userId, movieId);
@@ -18,12 +18,15 @@ export class ReviewsService {
       throw new ConflictException('You have already reviewed this movie');
     }
 
-    return this.reviewsRepository.create(
+    const review = await this.reviewsRepository.create(
       movieId,
       userId,
       createReviewDto.rating,
       createReviewDto.comment,
     );
+
+    review.username = username;
+    return review;
   }
 
   async findByMovieId(movieId: number): Promise<{ reviews: Review[]; total: number }> {
@@ -45,7 +48,7 @@ export class ReviewsService {
     return review;
   }
 
-  async update(id: number, userId: number, updateReviewDto: UpdateReviewDto): Promise<Review> {
+  async update(id: number, userId: number, username: string, updateReviewDto: UpdateReviewDto): Promise<Review> {
     const review = await this.findById(id);
 
     if (review.user_id !== userId) {
@@ -62,6 +65,7 @@ export class ReviewsService {
       throw new NotFoundException(`Review with ID ${id} not found`);
     }
 
+    updatedReview.username = username;
     return updatedReview;
   }
 
