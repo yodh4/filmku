@@ -1,98 +1,60 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
+Filmku adalah API RESTful untuk situs web ulasan film. API ini memungkinkan pengguna untuk mendaftar dan mengautentikasi untuk memposting, memperbarui, dan menghapus ulasan mereka untuk berbagai film. Pengguna yang tidak terautentikasi dapat menelusuri film dan membaca ulasan.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+## Environment Variable
+```
+DATABASE_URL=...
+JWT_SECRET=...
+JWT_EXPIRATION=...
 ```
 
-## Compile and run the project
+## Deployment Link
+### Backend: https://filmku-bb866a595f4e.herokuapp.com
 
-```bash
-# development
-$ npm run start
+## API Documentation
+### Postman: https://documenter.getpostman.com/view/29704147/2sB3Wnxhef
 
-# watch mode
-$ npm run start:dev
+## Pattern Project
+### 1. Three-Layer Architecture
+Projek ini saya buat dengan menggunakan three-layer architecture. Arsitektur ini akan membuat tiga layer arsitektur yaitu layer `controller`, layer `service`, dan layer `repository` dengan setiap layer memiliki tanggung jawabnya sendiri-sendiri.
 
-# production mode
-$ npm run start:prod
-```
+1.  **Controller Layer (`*.controller.ts`):** 
+Ini adalah layer terluar dari aplikasi yang dibuat. Tanggung jawab utamanya adalah menangani permintaan HTTP yang masuk dan mengirimkan respons. Layer ini akan memproses parameter request , query string, dan isi request, lalu mendelegasikan pekerjaan yang sebenarnya ke `service` layer. Layer ini tidak boleh berisi logika bisnis atau akses langsung ke basis data.
 
-## Run tests
+2.  **Service Layer (`*.service.ts`):** 
+Ini adalah inti dari aplikasi dan berisi semua logika bisnis. Layer ini akan mengatur operasi aplikasi, memvalidasi data, dan membuat keputusan. Layer `service` akan mengambil atau menyimpan data dengan memanggil metode pada `repostitory` layer. Layer ini tidak fokus dengan *bagaimana* data disimpan atau diambil, melainkan dengan *data apa* yang dibutuhkannya.
 
-```bash
-# unit tests
-$ npm run test
+3.  **Repository Layer (`*.repository.ts`):** 
+Ini adalah layer untuk mengakses data. Tugasnya hanya berkomunikasi dengan basis data. Layer ini berisi semua logika untuk kueri dan manipulasi data dari database. Layer ini menyediakan API yang bersih dan berorientasi objek bagi 'service' layer untuk mengakses data, tanpa peduli detail implementasi basis data yang mendasarinya.
 
-# e2e tests
-$ npm run test:e2e
+**Dengan menggunakan arsitektur ini flow http request-nya akan menjadi seperti berikut:**
 
-# test coverage
-$ npm run test:cov
-```
+`HTTP Request` → `Controller` → `Service` → `Repository` → `Database`
 
-## Deployment
+Keunggulan menggunakan **Three-Layer Architecture** di antaranya adalah:
+- **Decoupling & Separation of Concerns**
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+    Arsitektur ini menciptkana batasan yang jelas antara business logic dan akses data. Business logic terpisah sepenuhnya dari database sehingga kita dapat mengubah database atau query tanpa perlu merefactor business logic.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- **Mempermudah Proses Testing**
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+    Three-Layer Architecture dapat mempermudah proses testing, misalnya kita dapat dengan mudah membuat versi mock dari repositori yang dibutuhkan ketika ingin menguji `service` layer. Hal ini memungkinkan kita untuk menguji business logic secara terpisah, sehingga pengujian dapat dilakukan dengan lebih cepat dan lebih mudah.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+  
+### 2. DTO Pattern
 
-## Resources
+DTO (Data Transfer Object) adalah objek yang menentukan struktur data yang dikirim. Dalam aplikasi ini DTO digunakan dalam bentuk `DTO Request` untuk menentukan struktur yang diharapkan dari request body yang masuk, dan dalam bentuk `DTO Response` untuk menentukan struktur response body yang akan dikirim ke client.
 
-Check out a few resources that may come in handy when working with NestJS:
+Keuntungan yang didapat jika menggunakan DTO pattern di antaranya:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+1. **Keamanan**
 
-## Support
+    DTO pattern dapat mencegah exposure data sensitif ke client karena kita secara eksplisit membuat struktur data yang akan dikirim ke client
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+2. **Validasi Otomatis**
 
-## Stay in touch
+    Kita dapat memvalidasi request body yang masuk dengan menggunakan library `class-validator`. Kita hanya perlu men-configure `ValidationPipe` di `main.ts` untuk men-enforce aturan tertentu untuk setiap request body yang masuk dan aplikasi akan me-reject suatu request secara otomatis apabila terdapat request body yang tidak sesuai dengan aturan yang kita buat
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+3. **Definisi API yang Jelas**
 
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+    Menggunakan DTO pattern dapat mempermudah kolaborasi dengan developer lain karena setiap developer hanya perlu melihat file DTO untuk mengetahui data yang perlu dikirim dan bagaimana response dari suatu endpoint.
